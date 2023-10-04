@@ -1,0 +1,16 @@
+{% extends "base.html" %} {% block title %} homehomeHOMEhomehome {% endblock %}
+
+{% block content %}
+<br />
+<br />
+
+<h1 align="center">This is the home page, log in to access dashboard.</h1>
+
+
+{% if user.is_authenticed %}
+
+<p>This will be a dashboard for anything you record during a session, will be hooked up to anything you do with route instances model</p>
+
+{% endif %}
+
+{% endblock %}
