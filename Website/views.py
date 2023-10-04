@@ -11,3 +11,9 @@ views = Blueprint("views", __name__)
 def home():
     print("Hi I am a route")
     return render_template("home.html", user=current_user)
+
+
+@views.route("/map", methods=["GET", "POST"])
+def map_view():
+    print("Hi I am the map route")
+    return render_template("map.html", user=current_user)
