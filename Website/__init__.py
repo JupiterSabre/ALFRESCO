@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 
+
 # create database
 db = SQLAlchemy()
 ALFREDO_USER_DB = "database.db"

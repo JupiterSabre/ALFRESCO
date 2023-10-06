@@ -1,17 +1,23 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from .models import User, Route_Instance
-from . import db 
+from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeTimedSerializer
+
+
 
 
 auth = Blueprint("auth", __name__)
 
 @auth.route("/login-signup", methods=["GET", "POST"])
 def login():
+    s = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+
     form_type = None
     if request.method == "POST":
         form_type = request.form.get("form_type")
+        # login request form config
         if form_type == "login":
             email = request.form.get("email")
             password = request.form.get("password")
@@ -28,7 +34,7 @@ def login():
                 flash("Email not in database, have you signed up?", category="error")
 
 
-
+        # Sign up request form config
         elif form_type == "signup":
             email = request.form.get("signup-email")
             username = request.form.get("username")
@@ -53,14 +59,38 @@ def login():
                 login_user(new_user, remember=True)
                 flash("Account created!", category="success")
                 return redirect(url_for("views.home"))
+            
+            
+        # Password reset request
+        elif form_type == "request_reset":
+            email = request.form.get("res-email")
+            user = User.query.filter_by(email=email).first()
+            if user:
+                token = s.dumps(email, salt="password-reset")
+                flash(f"Your token is {token}. Use it to reset your password.")
+            else:
+                flash("Email not found!", "danger")
+            return render_template("login-signup.html", user=current_user)
+        
+        elif form_type == "reset_password":
+            token = request.form.get("reset_token")
+            try:
+                email = s.loads(token, sale="password-reset", max_age=3600)
+                user = User.query.filter_by(email=email).first()
+            except:
+                flash("The token is invalid or has expired!", "danger")
+                return render_template("login-signup.html", user=current_user)
+            
+            new_password = request.form.get("new_password")
+            user.password = generate_password_hash(new_password, method="sha256")
+            db.session.commit()
+            flash("Password successfully updated", "success")
+            return redirect(url_for("auth.login-signup"))
     else:
         flash("Invalid form Submission")
-
-    
-
     return render_template("login-signup.html", user=current_user)
 
-
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TO DO , FIX PASSWORD RESET.
 # login_required decorator for routes that require the user to be logged in (which are most things in this project)
 @auth.route("/logout")
 @login_required

@@ -5,6 +5,7 @@
 <div>
     <h1>Login</h1>
 
+    <!-- LOGIN FORM -->
     <form method="POST">
         <input type="hidden" name="form_type" value="login">
         <div class="form-group">
@@ -19,9 +20,10 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
+<br />
 
 
-
+<!-- SIGN UP FORM -->
 <div>
     <h1>Sign Up</h1>
     <form method="POST">
@@ -45,5 +47,45 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
+<br />
+<br />
+
+
+<!-- RESET PASSWORD FORM -->
+<div>
+    <h2>Reset Password</h2>
+    
+    <form method="POST">
+        <input type="hidden" class="form-control" name="form_type" value="request_reset" />    
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" name="res-email" placeholder="Enter email in registry" required />
+            <button type="submit">Request Password Reset</button>
+        </div>
+    </form>
+
+    <br />
+<br />
+
+
+    <form method="POST">
+        <input type="hidden" name="form_type" value="reset_password" />
+        <div class="form-group">
+            <label for="reset_token">Token:</label>
+            <input type="text" class="form-control" name="reset_token" placeholder="Tokenize me cap'n" />
+        </div>
+        <div class="form-group">
+            <label for="new_password">New Password</label>
+            <input type="password" class="form-control" id="new_password" ="new_password" placeholder="Required" required />
+        </div>
+        <div class="form-group">
+            <label for="new_password2">Password (confirm)</label>
+            <input type="password" class="form-control" id="new_password2" name="new_password2" placeholder="Confirm Password">
+        </div>
+            <button type="submit">Reset Password</button>
+    </form>
+</div>
+<br />
+<br />
 
 {% endblock %}
