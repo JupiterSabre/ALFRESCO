@@ -2,18 +2,31 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
+from flask_mail import Mail, Message
 
 
+# YOU LEFT OFF HERE FOR THURSDAY SOMETHING WITH THE MAIL VARIABLE, FIX THE PASSWORD RESET PLEASE.
 # create database
 db = SQLAlchemy()
 ALFREDO_USER_DB = "database.db"
+mail = Mail()
 
 def create_app():
-    app= Flask(__name__)
+    app = Flask(__name__)
     app.config["SECRET_KEY"] = "catdogcatdog"
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{ALFREDO_USER_DB}"
-    db.init_app(app)
 
+
+    # config flask_mail for password reset
+    app.config['MAIL_SERVER'] = 'smtp.yourmailserver.com'
+    app.config['MAIL_PORT'] = 465
+    app.config['MAIL_USERNAME'] = 'your@email'
+    app.config['MAIL_PASSWORD'] = 'yourpassword'
+    app.config['MAIL_USE_TS'] = False
+    app.config['MAIL_USE_SSL'] = True
+
+    db.init_app(app)
+    mail.init_app(app)
 
     from .views import views
     from .auth import auth

@@ -1,10 +1,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from .models import User, Route_Instance
-from . import db
+from . import db, mail
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
-
 
 
 
@@ -71,6 +70,7 @@ def login():
             else:
                 flash("Email not found!", "danger")
             return render_template("login-signup.html", user=current_user)
+        
         
         elif form_type == "reset_password":
             token = request.form.get("reset_token")
