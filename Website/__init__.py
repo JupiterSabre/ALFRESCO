@@ -11,11 +11,13 @@ db = SQLAlchemy()
 ALFREDO_USER_DB = "database.db"
 mail = Mail()
 
+
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "catdogcatdog"
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{ALFREDO_USER_DB}"
 
+   
 
     # config flask_mail for password reset
     app.config['MAIL_SERVER'] = 'smtp.yourmailserver.com'
@@ -33,6 +35,10 @@ def create_app():
 
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(auth, url_prefix="/")
+
+
+
+    # Configure login manager
 
     from .models import User, Route_Instance
 

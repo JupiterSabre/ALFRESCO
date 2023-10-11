@@ -2,9 +2,9 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 import requests
 from .models import User, Route_Instance
-from . import db, app
+from . import db
 
-# from flask_socketio import oin_room, leave_room, send, SocketIO
+from flask_socketio import join_room, leave_room, send, SocketIO
 
 # import random
 # from string import ascii_uppercase
