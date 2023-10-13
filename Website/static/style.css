@@ -15,9 +15,12 @@
     background: #eee;
     }
 
-    #map {
-        height: 100%;
+    #map-container {
+        height: 50%;
+        width: 100%;
     }
 
-    html, body
 
+  body {
+    height: 100%
+  }

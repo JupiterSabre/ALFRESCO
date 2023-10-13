@@ -4,13 +4,24 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<script src="https://pollyfill.io/v3/pollyfill.min.js?features=default"></script>
 
 <h1>I AM A MAP IM THE MAP HERE IS THE MAP We practicing KML layerz</h1>
 
-<div id="map"> <!--Maps will live here! --> </div>
+<div id="map-container" style="height: 800px"> <!--Maps will live here! --> </div>
+<div id="capture"></div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYLlRZuxNN0Q8dVQfZ6tTmS-NDBuwo2JY" defer ></script>
+
+
+
+
+<script async
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYLlRZuxNN0Q8dVQfZ6tTmS-NDBuwo2JY&callback=initMap">
+</script>
+  <script defer src="/static/map.js"></script>
+
+
+
+
 
 
 
