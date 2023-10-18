@@ -23,7 +23,7 @@
                 {% if user.is_authenticated %}
                 <div class="navbar-nav">
                     <a class="nav-item nav-link" id="saved routes" href="/">DASHBOARD</a>
-                    <a class="nav-item nav-link" id="map" href="/map">MAP</a>
+                    <a class="nav-item nav-link" id="a-map" href="/map">MAP</a>
                     <a class="nav-item nav-link" id="logout" href="/logout">LOGOUT</a>
                     {% else %}
                     <a class="nav-item nav-link" id="home" href="/">HOME</a>
@@ -61,6 +61,17 @@
             {% endblock %}
         </div>
 
+
+        <script>
+            const config = require('./config.json')
+            const apiKey = config.API_KEY
+        
+            (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+              key: API_KEY ,
+              v: "beta",
+          
+            });
+          </script>
         <script
         src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"

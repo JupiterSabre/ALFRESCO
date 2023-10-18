@@ -5,19 +5,624 @@
 
 {% if user.is_authenticated %}
 
-<h1>I AM A MAP IM THE MAP HERE IS THE MAP We practicing KML layerz</h1>
-
-<div id="map-container" style="height: 800px"> <!--Maps will live here! --> </div>
-<div id="capture"></div>
 
 
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+
+<!-- Load the `mapbox-gl-geocoder` plugin. -->
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
+<!-- Load the geolocater plugin -->
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css" type="text/css">
+ 
+
+
+<style>
+html { 
+    margin: 0; 
+    padding: 0; 
+    height:100% }
+
+#map { 
+    flex-grow: 1; 
+    height: 100% }
+
+#container {
+    display: flex;
+    height: 100%;
+}
+
+#sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    height: 100%;
+    padding: 30px;
+}
+
+button {
+    display: block;
+    margin-bottom: 15px;;
+}
+</style>
 
 
 
-<script async
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYLlRZuxNN0Q8dVQfZ6tTmS-NDBuwo2JY&callback=initMap">
+
+
+<div id="container">
+    <div id="sidebar">
+        <button id="fly-to-brooklyn">Brooklyn</button>
+        <button id="fly-to-queens">Queens</button>
+        <button id="fly-to-manhattan">Manhattan</button>
+        <button id="fly-to-statenisland">Staten Island</button>
+        <button id="fly-to-the-bronx">The Bronx</button>
+
+
+
+
+        <button id="reset-view">Reset</button>
+
+        <button id="toggle-borough-boundaries">Toggle Borough Boundaries</button>
+
+
+    </div>
+    <div id="map" style="height: 800px"></div>
+</div>
+
+
+<script>
+    const INITIAL_CENTER = [-73.979702,40.668834]
+    const INITIAL_ZOOM = 10
+	mapboxgl.accessToken = 'pk.eyJ1IjoienVsYWlyIiwiYSI6ImNsbG45aXdtZDJoZzgzbnF2OXV0dTAweHgifQ.1loirG3PCMdbLlVVSy5Rjw';
+    const map = new mapboxgl.Map({
+        container: 'map',
+        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+        style: 'mapbox://styles/mapbox/navigation-night-v1',
+        center: INITIAL_CENTER,
+        zoom: INITIAL_ZOOM,
+        projection: 'globe' // starting projection
+    });
+
+
+
+    // Add the control to the map.
+    map.addControl(
+        new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+        })
+    );
+
+
+
+
+    // Dummy data to add markers to. For project you'll need to get the geojson embedded.
+    const manhattanMarkers = [
+        {
+            'name': 'East River Esplanade',
+            'color':   '#5AB40B',
+            'lngLat': [ -73.976030,40.714920],
+            'description': ` : A 2 mile long city owned public space offering community programming, recreation, and great views from Manhattan's eastern shore. `
+        },
+        {
+            'name': 'Waterside Plaza',
+            'color':   '#5AB40B',
+            'lngLat': [ -73.973210,40.736780],
+            'description': ` : Built on landfill brought to the US as ships' ballast from the rubble of the city of Bristol, which was bombed by the Luftwaffe in WWII during the Bristol Blitz. In 2004 capital improvements of the plaza including waterproofing, repaving, and extensive park-like landscaping added.`
+
+        },
+        {
+            'name': 'BasketBall City',
+            'color':   '#5AB40B',
+            'lngLat': [ -74.007230,40.7007230],
+            'description': ` : Located at pier 36, Basketball City is a 70,000 sq ft state of the art sports & entertainment facility which contains seven air-conditioned basketball courts. In addition, the facility hosts numerous special events (art & fashion shows, expos, nonprofit fundraisers, tech conferences, etc.)` 
+
+        },
+        {
+            'name': 'Hudson River Park (Pier 25 & 26)',
+            'color':   '#5AB40B',
+            'lngLat': [ -74.012495,40.720907],
+            'description': ` : Pier 25 is the longest pier in Hudson River Park. It includes an 18 hole miniature golf course, climbing structures, and flexible turf field. Enjoy sweeping views ofsailboats, the Statue of Liberty, and Ellis Island. Pier 26 is a 2.5 acre ecologically themes pier -- incorporating indigenous plants evocative of Manhattan's ecosystem prior to human development. A short habitat walk leads visitors through 5 native ecological zones: woodland forests, coastal grassland, maritime scrub, and rocky tidal zone.` 
+
+        },
+        {
+            'name': 'Chelsea Piers',
+            'color':   '#5AB40B',
+            'lngLat': [-74.01249472453738,40.72090747300013],
+            'description': ` : A series of piers on the west side of Manhattan, they were originally a passenger ship terminal in the early 1900's. The piers replaced a variety of run-down waterfront structures with a row of grand buildings embellised with pink granite facades. The piers are currently used by the Chelsea Piers Sports & Entertainment Complex, boasting a 28acre waterfront sports village along Manhattan's Hudson River.`  
+
+        },
+        {
+            'name': 'Fort Washington Park',
+            'color':   '#5AB40B',
+            'lngLat': [-73.945332,40.850737],
+            'description': ` : Known to locals  as the site of Manhattan's only lighthouse, Fort Washington Park offers spectacular views of the Palisades, and George Washington Bridge -- along with its 160-acre ribbon of dramatic cliffs, meadows, and wooded areas. The park's recent renovations include a new ADA ramp connecting the Henry Hudson Parkway and Dyckman Street, a new playground, a partion of greenway path, and 5 volleyball courts, as well as improved landscapeing and waterfront access points.` 
+
+        },
+        {
+            'name': 'Swindler Cove Park',
+            'color':   '#5AB40B',
+            'lngLat': [-73.921241,40.858183],
+            'description': ` : Opened in 2003, the park occupies a five acre patch of land along Harlem River that was once used as a communal dumping ground. Today, the park houses a series of ponds and waterfalls, with meandering footpaths leading to birdhouses, a communal garden, and of Manhattan's only beaches. The beach faces the Peter Jay Sharp Boathouse, which is part of the park and open to the community. It offers boating lessons to the neighborhood and houses boats for a variety of clubs and colleges. ` 
+
+        },
+        {
+            'name': 'Fort Tryon Park',
+            'color':   '#5AB40B',
+            'lngLat': [-73.932539,40.786195],
+            'description': ` : John D. Rockefeller Jr. began acquiring private parcels in 1917 as part of his vision of developing a beautiful park with majestic views of the Hudson River and Palisades for the public. The Olmsted brothers designed the park and oversaw its construction between 1931 & 1935. Park goers can run or walk on the park's 8 miles of pathways, play on lawns, and enjoy the city's largest garden with unrestricted public access, the Heather Garden. Fort Tryon is also home to the Cloisters ( a branch of MOMA that houses nearly 5,000 medieval works in a building comprised of several structures from Europe).` 
+
+        },
+        {
+            'name': 'HighBridge Park',
+            'color':   '#5AB40B',
+            'lngLat': [-73.92645,40.853839],
+            'description': ` This park boasts the city's first mountain biking course and a world class skate park. open vistas and an unusual geologic makeup greet visitors who stroll the pathways north and south through the park, while pedestrians and waterside cyclists on the greenways cherish its magnificent cliffs and large rock outcroppings.  `
+
+        },
+        {
+            'name': 'John V. Lindsey East River Park',
+            'color':   '#5AB40B',
+            'lngLat': [-73.97441,40.718863],
+            'description': ` : Boasting a track and tennis complex, 8 baseball/softball fields, and fields and courts dedicated to soccer, football, and basketball, as well as its dramatic views of the NY harbor. The park is also a vital link on Manhattan's waterfront greenway, and offers beautiful waterfront pathways for bicyclists and pedestrians to enjoy. `
+
+        }
+        ,
+        {
+            'name': 'Carl Schurz Park',
+            'color':   '#5AB40B',
+            'lngLat': [-73.943818,40.775163],
+            'description': ` : A picturesque park; one of the city's best concealed secrets, & most dog friendly -- two dog runs offer plenty of space for pups. A stroll along the promenade provides beautiful views of the river, Roosevely Island Lighthouse, Triborough Bridge, Randall's & Wards Islands, and Gracie Mansion -- the 18th century mansion that serces as the Mayor's official residence. `
+
+        }
+        ,
+        {
+            'name': 'Andrew Haswell Green Park',
+            'color':   '#5AB40B',
+            'lngLat': [-73.957428,40.759624],
+            'description': ' : Includes a small pavilion on east 60th Street, located at the intersection of York Ave, FDR Drve, and East 61st street in the Lenox Hill sectuon of Manhattan. The east river roundabout also features an 80 foot long aluminum helix by artist Alice Aycock. The highly visible sculpture is attached to the skeletal steel roof supports of a former waterfront garbage transfer station.' 
+
+        }
+    ]
+
+
+
+    // Add marker for each object in the manhattan marker array by looping through the boroughs array.
+    manhattanMarkers.forEach(({name,lngLat,color, description}) => {
+            // create the popup
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText(name + " " + description + "<button> Enter Chatroom</button>");
+ 
+    new mapboxgl.Marker({
+        color: color,
+        scale: 0.6
+    })
+    .setLngLat(lngLat)
+    .setPopup(popup)
+    .addTo(map);
+
+    })
+
+
+
+    const brooklynMarkers = [
+        {
+            'name': 'Brooklyn Bridge Park',
+            'color':   '#E58353',
+            'lngLat': [ -73.99521,40.69851],
+            'description': ` : An 85 acre world class sustainable park on Brooklyn's East River shoreline. The park revitalizes 1.3 miles of Brooklyn's post-industrial waterfront from Pier 6 at Atlantic Avenue to Jay Street north of the Manhattan Bridge. The park's numerous amenities includes boat launches, Pebble Beach, the historic Jane Carousel, sports fields, basketball courts, a fishing station, and several concessions. `
+        },
+        {
+            'name': 'Shirley Chisolm Park',
+            'color':   '#E58353',
+            'lngLat': [ -73.8652,40.6473],
+            'description': ` : A 407 acre state-park bound by Belt Parkway and Spring Creek park to the north and Jamaica Bay to the south, situated atop the former Pennsylvania Avenue and Fountain Avenue Landfills. Amenities include ten miles of biking and hiking trails, a pier for fishing and picknicking, and water access. The park features a colorful mural honoring Chisolm by street artist Danielle Mastrion. In addition to bike hiking and trails, the park features the Shirley Chisolm State Park Library which will offer free loaner bikes of all shapes and sizes for visitors to ride the taiks of the park.`
+
+        },
+        {
+            'name': `Owls Head Park`,
+            'color':   '#E58353',
+            'lngLat': [ -74.03238,40.63991],
+            'description': ` : This spacious property contains rolling hills, peaceful, meandering pathways, and breathtaking views of the New York skyline and striking Verrazano Narrows Bridge. There are special events, too, including free Family Camping, during which guests of all ages can borrow tents and sleeping bags and spend the evening under the sun.` 
+
+        },
+        {
+            'name': 'Marine Park Salt Marsh Nature Trail',
+            'color':   '#E58353',
+            'lngLat': [-743.92393,40.60163],
+            'description': ` : As Brooklyn's largest park, it consists of 530 acres of grassland and precious salt marsh, protected as a Forever Wildlife Preserve. This preserved wilderness hides the remains of a colonial grain mill used to feed George Washington's troops. The marsh is home to roughly 325 species of birds like warblers, sparrows, and pheasants; 50 species of butterflies; and 100 species of fish. There's even a platform where you can see two mated ospreys who have nested there for years (ospreys mate for life) `  
+
+        },
+        {
+            'name': 'Canarsie Pier',
+            'color':   '#E58353',
+            'lngLat': [-73.88644,40.63004],
+            'description': ` : An old, restored fishing pier, constitutes one of the many parts of the Gateway National Recreation Area, run by the National Parks Service. There are benches shaded by many tall trees, picnic tables, and numerous gulls sitting and resting on lampposts. It was built in 1926 by the NYC Department of Docks as part of a larger project to expand Jamaica Bay -- both physically with sand dredged from the bay and as a center of commerce. This plan never came to fruition, and the site has been associated since the earlieth twentieth century with professional and recreational fishing.` 
+
+        },
+        {
+            'name': 'Bushwick Inlet Park',
+            'color':   '#E58353',
+            'lngLat': [-73.96139,40.72165],
+            'description': ` : The centerpiece of the Greenpoint-Williamsburg waterfront. The park currently consists of two non-contiguous sectinos along the East River and is eventually planned to reach into GreenPoint at Quay Street ` 
+
+        },
+        {
+            'name': 'Domino Park',
+            'color':   '#E58353',
+            'lngLat': [-73.9678,40.71468],
+            'description': ` : Domino Park is a 5 acre park built on the site of the former Domino Sugar Refinery.  The park is a tribute to the diversity and resiliency of generations of Domino workers, their families, and their neighborhood. The park consists of several areas, each with its own purpose. First, an elevated walkway which invites you to enjoy a view of the east river and the manhattan skyline. Then, there is the family playground. It includes many parts of the sugar factory and it looks like a mini-factory. Here you can diligently explore, climb, and play.` 
+
+        },
+        {
+            'name': 'Erie Basin Park',
+            'color':   '#E58353',
+            'lngLat': [-74.01208,40.6709],
+            'description': ` The park is located on a former brownfield site in the once isolated and troubled Red Hook section of Brooklyn. Previously closed off to the neighborhood by the NY Shipyard, Erie Basin park provides public access to the waterfront and is a significant contributor to a community rennaisance. The 6.5 acre park represents a model of public/private partberships transforming abandoned waterfront properties. The result has been the creation of one of the most significant waterfront parks in NYC.   `
+
+        },
+        {
+            'name': 'Bush Terminal Park',
+            'color':   '#E58353',
+            'lngLat': [-74.01962,40.65322],
+            'description': ` : A quiet natural space in the industrial section of Sunset Park, Bush Terminals Piers Park is a lovely waterfront park with spectacular views of the area's tidal pppls and the Bay Ridge Channel. This site, once a port complex, was cleaned up and opened as a public park in 2014. Visitors will find 2 multi-purpose soccer and baseball fields as well as a nature preserve that allows a fun glimpse into Brooklyn's wild side. The park's namesake bears the name of what was once called Bush Terminal in what is now a privately owned industry City complex that covers 16 structures and 35 acres.`
+
+        }
+        ,
+        {
+            'name': 'American Veterans Memorial Pier',
+            'color':   '#E58353',
+            'lngLat': [-74.03776,40.63938],
+            'description': ` : Bay Ridge's most popular go-to fishing spot. The 600 foot pier once served as the embarkation point for the Bay Ridge-St.George Ferry. After the completion of the Verrazano-Narrows Bridge, it was opened for recreational use due to its stunning views. Because the pier once boasted unobstructed views of the World Trade Center, a 9/11 memorial was plaved on the pier in 2005. `
+
+        }
+        ,
+        {
+            'name': 'John Paul Jones Park',
+            'color':   '#E58353',
+            'lngLat': [-74.03386,40.61097],
+            'description': ' : Named after the American patriot and naval commander of the same name, who was known for his leadership in the American Revolution. The park is home to several memorials from various events in American history. There is also a cizy gazebo with a view of the Verazzano bridge.' 
+
+        }
+    ]
+
+
+    // Add marker for each object in the brooklyn marker array by looping through the boroughs array.
+    brooklynMarkers.forEach(({name,lngLat,color, description}) => {
+            // create the popup
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText(name + " " + description);
+ 
+    new mapboxgl.Marker({
+        color: color,
+        scale: 0.6
+    })
+    .setLngLat(lngLat)
+    .setPopup(popup)
+    .addTo(map);
+
+    })
+
+
+
+    const queensMarkers = [
+        {
+            'name': 'Fort Totten Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.7761,40.79233],
+            'description': ` : A pristine stretch surrounding a preserved Civil War fortress, Fort Totten provides not only recreation and relaxation but a fascinating glimpse into New York's past. Year-round, New Yorkers flock to Fort Totten Park to enjoy its special events, natural wonders, and historic buildings. On hot summer days, swimmers can take a dip in the pool and sunbathe around its grassy edges, or take canoes out and paddle along the Long Island Sound. `
+        },
+        {
+            'name': 'Crocheron Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -40.77216 ,-73.76764],
+            'description': ` : Formerly a summer hotel called Crocheron House -- a former watering hole for politicians, theatrical people, and financiers. It became a magnet for William Marcy Boss Tweed, the notorious Tammany Hall Leader, who hid there following his escape in 1875. It was said that Tweed, while heading for Spain, embarked to Cuba aboard a schooner brought to anchor in the bay by his friends. Around 1907-1908, the hotel was leveled in a fire. Afterwards the community took it upon themselves and raised funds to purchase 42 acres and gave them to the city to become Crocheron Park.`
+
+        },
+        {
+            'name': 'Cunningham Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.76513,40.74308],
+            'description': ` : Numerous unnamed trails winde through native hardwood (oak-hickory) forest, which features a diverse ecosystem to support abundant wildlife. The parks' Kettle Ponds featuret the sounds of Spring Peppers and other species of from throughout the spring and summer season.`
+
+        },
+        {
+            'name': 'Bowery Bay Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.89227,40.77402],
+            'description': ` : Before the construction of Laguardia Airport in the late 1920's, the shoreline of Bowery Bay and Flushing Bay, originally called Bowery Bay Beach and later North beach, was a popular seaside resort. North Beach was the site of a popular amusement park from 1895 to 1915 and was known as 'The Coney Island of Queens'. The Western edge of Bowery Bay is the site of the Bowery Bay Water Pollution Contorl Plant, a wastewater treatment plant operated byt he NYC Department of Environmental Protection. The Rikers Island Bridge spans the northern portion of Bowery Bay.`
+
+        },
+        {
+            'name': 'Astoria Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.92594,40.77699],
+            'description': ` :  Although widely known for its beautiful pool, the oldest and largest in the city, Astoria Park offers more than aquatic pleasures. Outdoor tennis tracks, a track, a bandstand, multiple trails, basketball courts, and playgrounds lure visitors from the five boroughs and beyond. Sitting on the edge of the East River and resting between the Triborough Bridge and Hell Gate Bridge, the park offers shoreline sights and sounds that make the benches along its perimeter popular spots year-round.`
+
+        },
+        {
+            'name': 'Socrates Sculpture Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.93660,40.76892],
+            'description': ` : An outdoor museum and public park where artists can create and exhibit sculptures and multimedia installations. Since 1993, the park has been under the jurisdiction of Parks. Begun as one perons vision to transform a vacant lot, the park is home to a collaborative enterprise involving a diverse array of local residents, artists, and government agencies to create a valuable community resource as well as  vital cultural institution. `
+
+        },
+        {
+            'name': 'Hunters Point South',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.96092,40.74315],
+            'description': ` : This waterfront park was until recently an abandoned post-industrial area in Long Island City. Transformed into a space that offers fun and relaxation for everyone in the area, the new park includes a central green, playgrounds, adult fitness equipment, a dog run, a bikeway, a waterside promenade, picnic terraces, a 30-foot tall cantilevered platform for viewing the skyline and waterfront, and a 13,000 sq foot pavilion that contains comfrot stations, concessions, and an elevated cafe pizza.`
+
+        },
+        {
+            'name': 'Gantry Plaza State Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.95824,40.74687],
+            'description': ` : A 12 acre state park on the East Rivver in LIC. The park is located in a former dockyard and manufacturing district, and inclides remnants of facilities from the area's past. The most prominent feature of the park is a collection of gantries with car float transfer bridges, which in turn were served by barges that carried freigh railcars between Queens and Manattan.`
+
+        },
+        {
+            'name': 'Jacob Riis Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.87179,40.56747],
+            'description': ` : A 407 acre state-park bound by Belt Parkway and Spring Creek park to the north and Jamaica Bay to the south, situated atop the former Pennsylvania Avenue and Fountain Avenue Landfills. Amenities include ten miles of biking and hiking trails, a pier for fishing and picknicking, and water access. The park features a colorful mural honoring Chisolm by street artist Danielle Mastrion. In addition to bike hiking and trails, the park features the Shirley Chisolm State Park Library which will offer free loaner bikes of all shapes and sizes for visitors to ride the taiks of the park.`
+
+        },
+        {
+            'name': 'Forest Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.8509,40.70458],
+            'description': ` : Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`
+
+        },
+        {
+            'name': 'Under the K Bridge Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.93658,40.72480],
+            'description': ` Lectus urna duis convallis convallis. Sed egestas egestas fringilla phasellus faucibus scelerisque eleifend donec. Mauris ultrices eros in cursus turpis massa tincidunt dui. Lorem donec massa sapien faucibus et molestie ac feugiat sed. Vel risus commodo viverra maecenas accumsan lacus vel facilisis. Tellus in hac habitasse platea. Adipiscing elit duis tristique sollicitudin. Consectetur adipiscing elit duis tristique sollicitudin nibh sit amet commodo. Laoreet non curabitur gravida arcu ac tortor dignissim. Tristique et egestas quis ipsum. Consectetur purus ut faucibus pulvinar elementum integer enim. Facilisis mauris sit amet massa vitae tortor condimentum lacinia. Ultrices in iaculis nunc sed. Egestas tellus rutrum tellus pellentesque. Ullamcorper sit amet risus nullam. Tortor consequat id porta nibh venenatis.`
+
+        },
+        {
+            'name': 'Highland Park',
+            'color':   '#E0C60B',
+            'lngLat': [ -73.88626,40.68960],
+            'description': ` Lectus urna duis convallis convallis. Sed egestas egestas fringilla phasellus faucibus scelerisque eleifend donec. Mauris ultrices eros in cursus turpis massa tincidunt dui. Lorem donec massa sapien faucibus et molestie ac feugiat sed. Vel risus commodo viverra maecenas accumsan lacus vel facilisis. Tellus in hac habitasse platea. Adipiscing elit duis tristique sollicitudin. Consectetur adipiscing elit duis tristique sollicitudin nibh sit amet commodo. Laoreet non curabitur gravida arcu ac tortor dignissim. Tristique et egestas quis ipsum. Consectetur purus ut faucibus pulvinar elementum integer enim. Facilisis mauris sit amet massa vitae tortor condimentum lacinia. Ultrices in iaculis nunc sed. Egestas tellus rutrum tellus pellentesque. Ullamcorper sit amet risus nullam. Tortor consequat id porta nibh venenatis.`
+
+        }
+    ]
+
+
+    // Add marker for each object in the brooklyn marker array by looping through the boroughs array.
+    queensMarkers.forEach(({name,lngLat,color, description}) => {
+            // create the popup
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText(name + " " + description);
+ 
+    new mapboxgl.Marker({
+        color: color,
+        scale: 0.6
+    })
+    .setLngLat(lngLat)
+    .setPopup(popup)
+    .addTo(map);
+
+    })
+
+
+
+
+    // Geojson data for borough boundaries from open data nyc
+    map.on('load', () => {
+        // set default atmosphere style
+        map.setFog({});
+        // add a source and layers for the NYC boroughs
+        map.addSource('borough-boundaries', {
+            type: 'geojson',
+            data: 'data/borough-boundaries.geojson',
+            promoteId: 'boro_code'
+        })
+        map.addLayer({
+            id: 'borough-boundaries-fill',
+            type: 'fill',
+            source: 'borough-boundaries',
+            paint: {
+                'fill-color': [
+                    'match',
+                    ['get', 'boro_code'],
+                    1,
+                    'green',
+                    2,
+                    'purple',
+                    3,
+                    'orange',
+                    4,
+                    'yellow',
+                    5,
+                    'red',
+                    'steelblue'
+                    
+                ],
+                'fill-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'hover'], false],
+                        1,
+                        0.3
+                    ],
+            },
+            layout: {
+                    visibility: 'visible'
+                }
+        })
+
+
+
+         // Add zoom and rotation controls
+        map.addControl(new mapboxgl.NavigationControl())
+
+        // Live track user.
+        map.addControl(new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true,
+            showUserHeading: true
+        }));
+
+
+        map.addControl( new MapboxDirections({
+            accessToken: mapboxgl.accessToken,
+            profile: 'mapbox/cycling',
+        }),
+            'top-left'
+        )
+
+
+        
+
+
+        // Adding external(local) geojson source for doc named borough-boundaries.geojson
+        map.addLayer({
+            id: 'borough-boundaries-line',
+            type: 'line',
+            source: 'borough-boundaries',
+            paint: {
+                'line-color': 'white',
+                'line-width': 4,
+                'line-opacity': 0.3
+            }
+        });
+
+
+        // Click events for markers from borough boundaries lines.
+        map.on('dblclick', (e) => {
+            // console.log('click!', e.point)
+            const [ selectedBorough ] = map.queryRenderedFeatures(e.point, {
+                layers: ['borough-boundaries-fill']
+            })
+
+            if (selectedBorough) {
+                const { boro_name, pop2020 } = selectedBorough.properties
+                alert(` Join chat room for ${boro_name} ?`)
+            }
+        })
+
+
+        // Borough boundary is highlighted on hover, and unhighligted on mouse leave.
+        let hoveredPolygonId = null
+        map.on('mousemove', 'borough-boundaries-fill', (e) => {
+            if (e.features.length > 0) {
+                if (hoveredPolygonId !== null) {
+                    map.setFeatureState(
+                        { source: 'borough-boundaries', id: hoveredPolygonId },
+                        { hover: false }
+                    );
+                }
+                hoveredPolygonId = e.features[0].id;
+                map.setFeatureState(
+                    { source: 'borough-boundaries', id: hoveredPolygonId },
+                    { hover: true }
+                );
+            }
+        });
+
+
+        map.on('mouseleave', 'borough-boundaries-fill', () => {
+            if (hoveredPolygonId !== null) {
+                map.setFeatureState(
+                    { source: 'borough-boundaries', id: hoveredPolygonId },
+                    { hover: false }
+                );
+            }
+            hoveredPolygonId = null;
+        });
+
+                })
+
+
+
+    // fly to manhattan
+
+    document.querySelector('#fly-to-manhattan').addEventListener('click', () => {
+        console.log("FLYING TO MANHATTAN")
+        map.flyTo({
+            center: [-73.992319,40.738088],
+            zoom: 13,
+            pitch: 65
+        })
+    })
+
+
+    // fly to coney brooklyn
+
+    document.querySelector('#fly-to-brooklyn').addEventListener('click', () => {
+        console.log("FLYING TO BROOKLYN")
+        map.flyTo({
+            center: [-73.976543,40.576569],
+            zoom: 13,
+            pitch: 65
+        })
+    })
+
+
+    // Fly to Queens
+    document.querySelector('#fly-to-queens').addEventListener('click', () => {
+        console.log("FLYING TO QUEENS")
+        map.flyTo({
+            center: [-73.819714,40.637795],
+            zoom: 12,
+            pitch: 75
+        })
+    })
+
+    
+    // reset map view
+
+    document.querySelector('#reset-view').addEventListener('click', () => {
+        console.log("BLUE SKADOO")
+        map.flyTo({
+            center: INITIAL_CENTER,
+            zoom: INITIAL_ZOOM,
+            pitch: 0
+        })
+    })
+
+
+
+    // Toggle Borough Boundaries
+    document.querySelector('#toggle-borough-boundaries').addEventListener('click', () => {
+        console.log("BOUNDARIES TOGGLED")
+            const isVisible = map.getLayoutProperty('borough-boundaries-fill', 'visibility') === 'visible'
+            if (isVisible) {
+                map.setLayoutProperty('borough-boundaries-fill', 'visibility', 'none')
+                map.setLayoutProperty('borough-boundaries-line', 'visibility', 'none')
+
+            }
+            else {
+                map.setLayoutProperty('borough-boundaries-fill', 'visibility', 'visible')
+                map.setLayoutProperty('borough-boundaries-line', 'visibility', 'visible')
+
+            }
+             })
+
+ 
+
 </script>
-  <script defer src="/static/map.js"></script>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
