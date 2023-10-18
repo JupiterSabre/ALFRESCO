@@ -24,7 +24,6 @@ from flask_socketio import join_room, leave_room, send, SocketIO
 
 
 
-
 views = Blueprint("views", __name__)
 
 @views.route("/", methods=["GET", "POST"])

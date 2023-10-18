@@ -54,18 +54,18 @@ button {
 
 <div id="container">
     <div id="sidebar">
-        <button id="fly-to-brooklyn">Brooklyn</button>
         <button id="fly-to-queens">Queens</button>
+        <button id="fly-to-brooklyn">Brooklyn</button>
         <button id="fly-to-manhattan">Manhattan</button>
-        <button id="fly-to-statenisland">Staten Island</button>
         <button id="fly-to-the-bronx">The Bronx</button>
+        <button id="fly-to-statenisland">Staten Island</button>
 
 
 
 
+        
+        <button id="toggle-borough-boundaries">Toggle Boundaries</button>
         <button id="reset-view">Reset</button>
-
-        <button id="toggle-borough-boundaries">Toggle Borough Boundaries</button>
 
 
     </div>
@@ -105,7 +105,7 @@ button {
             'name': 'East River Esplanade',
             'color':   '#5AB40B',
             'lngLat': [ -73.976030,40.714920],
-            'description': ` : A 2 mile long city owned public space offering community programming, recreation, and great views from Manhattan's eastern shore. `
+            'description': ` : A 2 mile long city owned public space offering community programming, recreation, and great views from Manhattan's eastern shore.  `
         },
         {
             'name': 'Waterside Plaza',
@@ -153,7 +153,7 @@ button {
             'name': 'Fort Tryon Park',
             'color':   '#5AB40B',
             'lngLat': [-73.932539,40.786195],
-            'description': ` : John D. Rockefeller Jr. began acquiring private parcels in 1917 as part of his vision of developing a beautiful park with majestic views of the Hudson River and Palisades for the public. The Olmsted brothers designed the park and oversaw its construction between 1931 & 1935. Park goers can run or walk on the park's 8 miles of pathways, play on lawns, and enjoy the city's largest garden with unrestricted public access, the Heather Garden. Fort Tryon is also home to the Cloisters ( a branch of MOMA that houses nearly 5,000 medieval works in a building comprised of several structures from Europe).` 
+            'description': ` : John D. Rockefeller Jr. began acquiring private parcels in 1917 as part of his vision of developing a beautiful park with majestic views of the Hudson River and Palisades for the public. The Olmsted brothers designed the park and oversaw its construction between 1931 & 1935. Park goers can run or walk on the park's 8 miles of pathways, play on lawns, and enjoy the city's largest garden with unrestricted public access, the Heather Garden. Fort Tryon is also home to the Cloisters ( a branch of MOMA that houses nearly 5,000 medieval works in a building comprised of several structures from Europe). <button> Enter Chatroom</button>` 
 
         },
         {
@@ -175,7 +175,7 @@ button {
             'name': 'Carl Schurz Park',
             'color':   '#5AB40B',
             'lngLat': [-73.943818,40.775163],
-            'description': ` : A picturesque park; one of the city's best concealed secrets, & most dog friendly -- two dog runs offer plenty of space for pups. A stroll along the promenade provides beautiful views of the river, Roosevely Island Lighthouse, Triborough Bridge, Randall's & Wards Islands, and Gracie Mansion -- the 18th century mansion that serces as the Mayor's official residence. `
+            'description': ` : A picturesque park; one of the city's best concealed secrets, & most dog friendly -- two dog runs offer plenty of space for pups. A stroll along the promenade provides beautiful views of the river, Roosevely Island Lighthouse, Triborough Bridge, Randall's & Wards Islands, and Gracie Mansion -- the 18th century mansion that serces as the Mayor's official residence. <button> Enter Chatroom</button> `
 
         }
         ,
@@ -183,7 +183,7 @@ button {
             'name': 'Andrew Haswell Green Park',
             'color':   '#5AB40B',
             'lngLat': [-73.957428,40.759624],
-            'description': ' : Includes a small pavilion on east 60th Street, located at the intersection of York Ave, FDR Drve, and East 61st street in the Lenox Hill sectuon of Manhattan. The east river roundabout also features an 80 foot long aluminum helix by artist Alice Aycock. The highly visible sculpture is attached to the skeletal steel roof supports of a former waterfront garbage transfer station.' 
+            'description': ' : Includes a small pavilion on east 60th Street, located at the intersection of York Ave, FDR Drve, and East 61st street in the Lenox Hill section of Manhattan. The east river roundabout also features an 80 foot long aluminum helix by artist Alice Aycock. The highly visible sculpture is attached to the skeletal steel roof supports of a former waterfront garbage transfer station. <button> Enter Chatroom</button>' 
 
         }
     ]
@@ -193,8 +193,7 @@ button {
     // Add marker for each object in the manhattan marker array by looping through the boroughs array.
     manhattanMarkers.forEach(({name,lngLat,color, description}) => {
             // create the popup
-    const popup = new mapboxgl.Popup({ offset: 25 }).setText(name + " " + description + "<button> Enter Chatroom</button>");
- 
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText(name + " " + description + "<button> BUTTON</button>");
     new mapboxgl.Marker({
         color: color,
         scale: 0.6
