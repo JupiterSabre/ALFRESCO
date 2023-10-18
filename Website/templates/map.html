@@ -21,10 +21,10 @@
 
 
 <style>
-html { 
+/* html { 
     margin: 0; 
     padding: 0; 
-    height:100% }
+    height:100% } */
 
 #map { 
     flex-grow: 1; 
@@ -69,7 +69,7 @@ button {
 
 
     </div>
-    <div id="map" style="height: 800px"></div>
+    <div id="map" style="height: 800px; width:75%;"></div>
 </div>
 
 
@@ -418,7 +418,7 @@ button {
         // add a source and layers for the NYC boroughs
         map.addSource('borough-boundaries', {
             type: 'geojson',
-            data: 'data/borough-boundaries.geojson',
+            data: 'static/borough-boundaries.geojson',
             promoteId: 'boro_code'
         })
         map.addLayer({
@@ -536,13 +536,12 @@ button {
             hoveredPolygonId = null;
         });
 
-                })
+        
+        
+        
+        // fly to manhattan
 
-
-
-    // fly to manhattan
-
-    document.querySelector('#fly-to-manhattan').addEventListener('click', () => {
+        document.querySelector('#fly-to-manhattan').addEventListener('click', () => {
         console.log("FLYING TO MANHATTAN")
         map.flyTo({
             center: [-73.992319,40.738088],
@@ -551,16 +550,16 @@ button {
         })
     })
 
-
+    
     // fly to coney brooklyn
-
+    
     document.querySelector('#fly-to-brooklyn').addEventListener('click', () => {
-        console.log("FLYING TO BROOKLYN")
-        map.flyTo({
-            center: [-73.976543,40.576569],
-            zoom: 13,
-            pitch: 65
-        })
+      console.log("FLYING TO BROOKLYN")
+      map.flyTo({
+        center: [-73.976543,40.576569],
+        zoom: 13,
+        pitch: 65
+      })
     })
 
 
@@ -575,6 +574,35 @@ button {
     })
 
     
+
+    // Fly to staten island
+    document.querySelector('#fly-to-statenisland').addEventListener('click', () => {
+        console.log("FLYING TO STATEN ISLAND")
+        map.flyTo({
+            center: [-74.135227,40.571067] ,
+            zoom: 11.5,
+            pitch: 75,
+            curve: 1
+        })
+    })
+    
+
+    
+    // Fly to the Bronx
+    document.querySelector('#fly-to-the-bronx').addEventListener('click', () => {
+    console.log("FLYING TO THE BRONX")
+    map.flyTo({
+        center: [-73.870096,40.838424] ,
+        zoom: 12,
+        pitch: 65,
+        curve: 1
+    })
+})
+    
+
+
+
+
     // reset map view
 
     document.querySelector('#reset-view').addEventListener('click', () => {
@@ -584,9 +612,9 @@ button {
             zoom: INITIAL_ZOOM,
             pitch: 0
         })
-    })
+      })
 
-
+      
 
     // Toggle Borough Boundaries
     document.querySelector('#toggle-borough-boundaries').addEventListener('click', () => {
@@ -598,23 +626,24 @@ button {
 
             }
             else {
-                map.setLayoutProperty('borough-boundaries-fill', 'visibility', 'visible')
+              map.setLayoutProperty('borough-boundaries-fill', 'visibility', 'visible')
                 map.setLayoutProperty('borough-boundaries-line', 'visibility', 'visible')
 
-            }
+              }
              })
+            })
 
  
 
-</script>
+            </script>
 
-</html>
-
-
+            
 
 
 
 
+            
+            
 
 
 
